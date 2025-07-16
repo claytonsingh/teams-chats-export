@@ -101,8 +101,16 @@ async def fetch_all_for_request(getable, request_config):
             response = await getable_.get(request_configuration=request_config)
             if response:
                 results = response.json()
-                for result in results["value"]:
-                    yield result
+                valid_results = True
+                if "error" in results:
+                    print(f"WARNING: error found in record, skipping: {results}")
+                    valid_results = False
+                elif "value" not in results:
+                    print(f"WARNING: expected 'value' key not found in record, skipping: {results}")
+                    valid_results = False
+                if valid_results:
+                    for result in results["value"]:
+                        yield result
 
 
 async def download_hosted_content(client, chat: Dict, msg: Dict, hosted_content_id: str, chat_dir: str):
