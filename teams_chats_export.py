@@ -26,6 +26,13 @@ client_id = os.getenv("CLIENT_ID")
 filename_size_limit = 255
 
 
+def sanitize_filename(filename: str):
+    """
+    transform filenames so they can be linked in html without problems.
+    """
+    # colons are problematic on some platforms, interpreted as scheme portion of an URI
+    return filename.replace(":", "_").replace("@", "_")
+
 def makedir(path):
     """basically mkdir -p"""
     if not os.path.exists(path):
@@ -324,7 +331,7 @@ def render_chat(chat: Dict, output_dir: str):
 
     # write out the html file
 
-    filename = f"{chat['id']}.html"
+    filename = sanitize_filename(f"{chat['id']}.html")
 
     path = os.path.join(html_dir, filename)
 
